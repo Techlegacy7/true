@@ -1,4 +1,4 @@
-import os
+from bot import Bot
 
-
-os.system("python3 -m bot")
+if __name__ == '__main__':
+    Bot().run()
