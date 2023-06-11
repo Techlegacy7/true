@@ -1,9 +1,10 @@
 import logging
 import logging.config
+import os
 from pyrogram import Client
 from bot.config import Config
 from bot.utils import start_webserver
-
+import pyromod
 
 # Get logging configurations
 
@@ -29,6 +30,8 @@ class Bot(Client):
 
         logging.info("Bot started")
         logging.info(f"Owner: {self.owner.mention}")
+
+        os.makedirs("downloads", exist_ok=True)
 
         if Config.WEB_SERVER:
             await start_webserver()
