@@ -32,7 +32,7 @@ class Config(object):
     ADMINS.append(OWNER_ID) if OWNER_ID not in ADMINS else []
     WEB_SERVER = is_enabled(os.environ.get("WEB_SERVER", "False"), False)
     DOWNLOAD_LOCATION = os.environ.get("DOWNLOAD_DIR", "downloads")
-    DEF_THUMB_NAIL_VID_S = os.environ.get("DEF_THUMB_NAIL_VID_S", "")
+    DEF_THUMB_NAIL_VID_S = os.environ.get("DEF_THUMB_NAIL_VID_S", "https://telegra.ph/file/2905cba04bc9b450c0628.jpg")
     CHUNK_SIZE = int(os.environ.get("CHUNK_SIZE", 128))
     TG_MAX_FILE_SIZE = int(os.environ.get("TG_MAX_FILE_SIZE", 2097152000))
     DEF_WATER_MARK_FILE = os.environ.get("DEF_WATER_MARK_FILE", "")
