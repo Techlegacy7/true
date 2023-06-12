@@ -8,8 +8,19 @@ from PIL import Image
 from pyrogram import enums
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from bot.config import Config, Script
+from bot.config import Config, Script, Buttons
 from bot.utils import DownLoadFile, humanbytes
+
+
+@pyrogram.Client.on_message(
+    pyrogram.filters.regex(pattern=f"^{Buttons.video_downloader_text}$")
+    & pyrogram.filters.private
+    & pyrogram.filters.incoming
+)
+async def video_downloader(bot, update):
+    await update.reply_text(
+        "Just send me any valid YouTube link or any link that has video in it. I will try to download it for you.",
+    )
 
 
 @pyrogram.Client.on_message(
