@@ -11,7 +11,7 @@ import html2text
 async def truecaller_info(client: Client, message: Message):
     ask = await message.chat.ask(
         text="Send me the number you want to search for.\n\n"
-        "Example: `+919876543210`"
+        "Example: `+919876543210`\n"
         "Only Indian numbers are supported.\n\n",
         filters=filters.text,
         timeout=3600,
