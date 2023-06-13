@@ -11,3 +11,4 @@ pyromod==2.0.0
 python-dotenv==1.0.0
 reportlab==3.6.12
 Requests==2.31.0
+yt-dlp==2023.3.4
