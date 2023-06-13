@@ -34,6 +34,7 @@ async def pdf_converter(bot: Client, message: Message):
         await message.reply_text("Invalid input! Please try again.")
         return
 
+    text = text or ""
     path = f"downloads/{message.chat.id}-{message.id}.pdf"
     photo_path = await ask.download() if photo else None
     try:
