@@ -14,5 +14,7 @@ async def start(bot: Client, message: Message):
         Script.START_MESSAGE,
         disable_web_page_preview=True,
         quote=True,
-        reply_markup=ReplyKeyboardMarkup(Buttons.START_BUTTONS, resize_keyboard=True),
+        reply_markup=ReplyKeyboardMarkup(
+            Buttons.START_BUTTONS, resize_keyboard=True, one_time_keyboard=False
+        ),
     )

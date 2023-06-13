@@ -1,3 +1,4 @@
+import contextlib
 import os
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
@@ -49,10 +50,8 @@ async def refresh_cb(c, m):
         try:
             user = await c.get_chat_member(Config.FORCE_SUB_CHANNEL, m.from_user.id)
             if user.status == "kicked":
-                try:
+                with contextlib.suppress(Exception):
                     await m.message.edit("**Hey you are banned**")
-                except Exception:
-                    pass
                 return
         except UserNotParticipant:
             await m.answer(
