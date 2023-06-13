@@ -36,15 +36,16 @@ async def text_to_speech_callback(bot: Client, callback_query: CallbackQuery):
     )
 
     text = "Hello World" if ask.text == "/skip" else ask.text
-    random_filename = "".join(random.choice("0123456789abcdef") for _ in range(32))
+    random_filename = "".join(random.choice("0123456789abcdef") for _ in range(10))
     out = await callback_query.message.reply_text(
-        "Generating text to speech...",
+        "Generating text to speech. THIS MAY TAKE A WHILE!",
     )
+    random_filename += ".mp3"
     audio = await convert_text_to_speech(text, filename=random_filename)
 
     await callback_query.message.reply_audio(
         audio,
-        caption=f"Text to speech generated for: `{text[:1000]}`",
+        caption="Text to speech generated",
     )
 
     os.remove(audio)

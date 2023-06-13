@@ -35,6 +35,7 @@ async def user_info_callback(bot: Client, callback_query: CallbackQuery):
         ask: Message = await callback_query.message.chat.ask(
             "Forward any message from the user chat you want to get info about.",
         )
+
         if ask.forward_from:
             user_id = ask.forward_from.id
     else:

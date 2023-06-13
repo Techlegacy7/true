@@ -18,8 +18,22 @@ from bot.utils import DownLoadFile, humanbytes
     & pyrogram.filters.incoming
 )
 async def video_downloader(bot, update):
+    supported_sites = """
+Supported Sites
+
+- YouTube
+- Twitter
+- Facebook
+- Instagram
+- Spotify
+- Vimeo
+- Dailymotion
+- TikTok
+- Likee
+- Mashable
+- TED"""
     await update.reply_text(
-        "Just send me any valid YouTube link or any link that has video in it. I will try to download it for you.",
+        f"Just send me any valid link to download the video\n{supported_sites}"
     )
 
 
@@ -142,10 +156,7 @@ async def echo(bot, update):
                     approx_file_size = humanbytes(formats["filesize"])
                 cb_string_video = f"video|{format_id}|{format_ext}"
                 cb_string_file = f"file|{format_id}|{format_ext}"
-                if (
-                    format_string is not None
-                    and "audio only" not in format_string
-                ):
+                if format_string is not None and "audio only" not in format_string:
                     ikeyboard = [
                         InlineKeyboardButton(
                             f"S {format_string} video {approx_file_size} ",
@@ -208,8 +219,8 @@ async def echo(bot, update):
                     ),
                 ]
             )
-            cb_string_file = f'file={format_id}={format_ext}'
-            cb_string_video = f'video={format_id}={format_ext}'
+            cb_string_file = f"file={format_id}={format_ext}"
+            cb_string_video = f"video={format_id}={format_ext}"
             inline_keyboard.append(
                 [
                     InlineKeyboardButton(
@@ -251,8 +262,8 @@ async def echo(bot, update):
             reply_to_message_id=update.id,
         )
     else:
-        cb_string_file = 'file=LFO=NONE'
-        cb_string_video = 'video=OFL=ENON'
+        cb_string_file = "file=LFO=NONE"
+        cb_string_video = "video=OFL=ENON"
         inline_keyboard.append(
             [
                 InlineKeyboardButton(

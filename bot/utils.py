@@ -93,17 +93,20 @@ async def convert_text_to_pdf_with_image(text_file, output_pdf, photo=None):
     # Create a canvas with letter size
     c = canvas.Canvas(output_pdf, pagesize=letter)
 
-    # Calculate the center position for the image
-    image_width = 100
-    image_height = 100
-    image_x = (letter[0] - image_width) / 2
-    image_y = letter[1] - 100 - image_height
-    print(photo)
+    page_width, page_height = letter
     if photo:
+        image = ImageReader(photo)
+        image_width, image_height = image.getSize()
+        max_width = page_width
+        max_height = page_height - 100  # Adjusted to leave space for the text
+        scaling_factor = min(max_width / image_width, max_height / image_height)
+        image_width *= scaling_factor
+        image_height *= scaling_factor
+        image_x = (page_width - image_width) / 2
+        image_y = page_height - 100 - image_height
+
         # Draw the image at the center of the top of the page
-        print(c.drawImage(
-            ImageReader(photo), image_x, image_y, width=image_width, height=image_height
-        ))
+        c.drawImage(image, image_x, image_y, width=image_width, height=image_height)
 
     # Set the font and size for the content
     c.setFont("Helvetica", 12)
@@ -117,7 +120,7 @@ async def convert_text_to_pdf_with_image(text_file, output_pdf, photo=None):
 
     text_content = text_content.replace("\n", "<br/>")
 
-    text_y = image_y - 20
+    text_y = image_y - 20 if photo else page_height - 100
     x = 20
 
     lines = text_content.split("<br/>")
