@@ -25,9 +25,7 @@ async def youtube_dl_call_back(bot, update):
     # youtube_dl extractors
     tg_send_type, youtube_dl_format, youtube_dl_ext = cb_data.split("|")
     thumb_image_path = f"{Config.DOWNLOAD_LOCATION}/{str(update.from_user.id)}.jpg"
-    save_ytdl_json_path = (
-        f"{Config.DOWNLOAD_LOCATION}/{str(update.from_user.id)}.json"
-    )
+    save_ytdl_json_path = f"{Config.DOWNLOAD_LOCATION}/{str(update.from_user.id)}.json"
     try:
         with open(save_ytdl_json_path, "r", encoding="utf8") as f:
             response_json = json.load(f)
@@ -91,7 +89,7 @@ async def youtube_dl_call_back(bot, update):
     description = Translation.CUSTOM_CAPTION_UL_FILE.format(mention)
     if "fulltitle" in response_json:
         description = response_json["fulltitle"][:1021]
-            # escape Markdown and special characters
+        # escape Markdown and special characters
     tmp_directory_for_each_user = (
         f"{Config.DOWNLOAD_LOCATION}/{str(update.from_user.id)}"
     )
@@ -171,12 +169,24 @@ async def youtube_dl_call_back(bot, update):
         end_one = datetime.now()
         time_taken_for_download = (end_one - start).seconds
         file_size = Config.TG_MAX_FILE_SIZE + 1
+        try_ext = [
+            "mkv",
+            "mp4",
+            "webm",
+        ]
         try:
             file_size = os.stat(download_directory).st_size
         except FileNotFoundError as exc:
-            download_directory = f"{os.path.splitext(download_directory)[0]}.mkv"
-            # https://stackoverflow.com/a/678242/4723940
-            file_size = os.stat(download_directory).st_size
+            for ext in try_ext:
+                try:
+                    download_directory = (
+                        f"{os.path.splitext(download_directory)[0]}.{ext}"
+                    )
+                    file_size = os.stat(download_directory).st_size
+                    break
+                except FileNotFoundError as exc:
+                    continue
+
         if file_size > Config.TG_MAX_FILE_SIZE:
             await bot.edit_message_text(
                 chat_id=update.message.chat.id,
