@@ -12,7 +12,7 @@ from bot.utils import convert_text_to_pdf_with_image
     & filters.incoming
 )
 async def pdf_converter(bot: Client, message: Message):
-    ask = await message.chat.ask(
+    ask: Message = await message.chat.ask(
         text="Send me the text / image you want to convert to PDF.",
         timeout=3600,
     )
@@ -26,14 +26,18 @@ async def pdf_converter(bot: Client, message: Message):
     if ask.text:
         text = ask.text
         photo = None
-    else:
-        text = None
+    elif ask.photo:
+        text = ask.caption
         photo = ask.photo
 
-    path = f"downloads/{message.chat.id}-{message.id}.pdf"
+    if not text and not photo:
+        await message.reply_text("Invalid input! Please try again.")
+        return
 
+    path = f"downloads/{message.chat.id}-{message.id}.pdf"
+    photo_path = await ask.download() if photo else None
     try:
-        await convert_text_to_pdf_with_image(text, path, photo)
+        await convert_text_to_pdf_with_image(text, path, photo_path)
     except Exception as e:
         traceback.print_exc()
         await message.reply_text("Something went wrong! Please try again.")
@@ -45,4 +49,6 @@ async def pdf_converter(bot: Client, message: Message):
     )
 
     os.remove(path)
+    if photo_path:
+        os.remove(photo_path)
     await out.delete()

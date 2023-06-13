@@ -98,12 +98,12 @@ async def convert_text_to_pdf_with_image(text_file, output_pdf, photo=None):
     image_height = 100
     image_x = (letter[0] - image_width) / 2
     image_y = letter[1] - 100 - image_height
-
+    print(photo)
     if photo:
         # Draw the image at the center of the top of the page
-        c.drawImage(
+        print(c.drawImage(
             ImageReader(photo), image_x, image_y, width=image_width, height=image_height
-        )
+        ))
 
     # Set the font and size for the content
     c.setFont("Helvetica", 12)
