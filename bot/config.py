@@ -35,7 +35,7 @@ class Config(object):
     DOWNLOAD_LOCATION = os.environ.get("DOWNLOAD_DIR", "downloads")
     DEF_THUMB_NAIL_VID_S = os.environ.get("DEF_THUMB_NAIL_VID_S", "")
     CHUNK_SIZE = int(os.environ.get("CHUNK_SIZE", 128))
-    TG_MAX_FILE_SIZE = 20971520000
+    TG_MAX_FILE_SIZE = 209715200000000
     DEF_WATER_MARK_FILE = os.environ.get("DEF_WATER_MARK_FILE", "")
     PROCESS_MAX_TIMEOUT = int(os.environ.get("PROCESS_MAX_TIMEOUT", 3600))
 
