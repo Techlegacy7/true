@@ -187,177 +187,168 @@ async def youtube_dl_call_back(bot, update):
                 except FileNotFoundError as exc:
                     continue
 
-        if file_size > Config.TG_MAX_FILE_SIZE:
-            await bot.edit_message_text(
-                chat_id=update.message.chat.id,
-                text=Translation.RCHD_TG_API_LIMIT.format(
-                    time_taken_for_download, humanbytes(file_size)
-                ),
-                message_id=update.message.id,
-            )
-        else:
-            is_w_f = False
-            images = await generate_screen_shots(
-                download_directory,
-                tmp_directory_for_each_user,
-                is_w_f,
-                Config.DEF_WATER_MARK_FILE,
-                300,
-                9,
-            )
-            logging.info(images)
-            await bot.edit_message_text(
-                text=Translation.UPLOAD_START,
-                chat_id=update.message.chat.id,
-                message_id=update.message.id,
-            )
-            # get the correct width, height, and duration for videos greater than 10MB
-            # ref: message from @BotSupport
+        is_w_f = False
+        images = await generate_screen_shots(
+            download_directory,
+            tmp_directory_for_each_user,
+            is_w_f,
+            Config.DEF_WATER_MARK_FILE,
+            300,
+            9,
+        )
+        logging.info(images)
+        await bot.edit_message_text(
+            text=Translation.UPLOAD_START,
+            chat_id=update.message.chat.id,
+            message_id=update.message.id,
+        )
+        # get the correct width, height, and duration for videos greater than 10MB
+        # ref: message from @BotSupport
+        width = 0
+        height = 0
+        duration = 0
+        if tg_send_type != "file":
+            metadata = extractMetadata(createParser(download_directory))
+            if metadata is not None and metadata.has("duration"):
+                duration = metadata.get("duration").seconds
+        # get the correct width, height, and duration for videos greater than 10MB
+        if os.path.exists(thumb_image_path):
             width = 0
             height = 0
-            duration = 0
-            if tg_send_type != "file":
-                metadata = extractMetadata(createParser(download_directory))
-                if metadata is not None and metadata.has("duration"):
-                    duration = metadata.get("duration").seconds
-            # get the correct width, height, and duration for videos greater than 10MB
-            if os.path.exists(thumb_image_path):
-                width = 0
-                height = 0
-                metadata = extractMetadata(createParser(thumb_image_path))
-                if metadata.has("width"):
-                    width = metadata.get("width")
-                if metadata.has("height"):
-                    height = metadata.get("height")
-                if tg_send_type == "vm":
-                    height = width
-                # resize image
-                # ref: https://t.me/PyrogramChat/44663
-                # https://stackoverflow.com/a/21669827/4723940
-                Image.open(thumb_image_path).convert("RGB").save(thumb_image_path)
-                img = Image.open(thumb_image_path)
-                # https://stackoverflow.com/a/37631799/4723940
-                # img.thumbnail((90, 90))
-                if tg_send_type == "file":
-                    img.resize((320, height))
-                else:
-                    img.resize((90, height))
-                img.save(thumb_image_path, "JPEG")
-                # https://pillow.readthedocs.io/en/3.1.x/reference/Image.html#create-thumbnails
+            metadata = extractMetadata(createParser(thumb_image_path))
+            if metadata.has("width"):
+                width = metadata.get("width")
+            if metadata.has("height"):
+                height = metadata.get("height")
+            if tg_send_type == "vm":
+                height = width
+            # resize image
+            # ref: https://t.me/PyrogramChat/44663
+            # https://stackoverflow.com/a/21669827/4723940
+            Image.open(thumb_image_path).convert("RGB").save(thumb_image_path)
+            img = Image.open(thumb_image_path)
+            # https://stackoverflow.com/a/37631799/4723940
+            # img.thumbnail((90, 90))
+            if tg_send_type == "file":
+                img.resize((320, height))
+            else:
+                img.resize((90, height))
+            img.save(thumb_image_path, "JPEG")
+            # https://pillow.readthedocs.io/en/3.1.x/reference/Image.html#create-thumbnails
 
-            else:
-                thumb_image_path = None
-            start_time = time.time()
-            # try to upload file
-            if tg_send_type == "audio":
-                await bot.send_audio(
-                    chat_id=update.message.chat.id,
-                    audio=download_directory,
-                    caption=description,
-                    parse_mode=enums.ParseMode.HTML,
-                    duration=duration,
-                    # performer=response_json["uploader"],
-                    # title=response_json["title"],
-                    # reply_markup=reply_markup,
-                    thumb=thumb_image_path,
-                    reply_to_message_id=update.message.reply_to_message.id,
-                    progress=progress_for_pyrogram,
-                    progress_args=(
-                        Translation.UPLOAD_START,
-                        update.message,
-                        start_time,
-                    ),
-                )
-            elif tg_send_type == "file":
-                await bot.send_document(
-                    chat_id=update.message.chat.id,
-                    document=download_directory,
-                    thumb=thumb_image_path,
-                    caption=description,
-                    parse_mode=enums.ParseMode.HTML,
-                    # reply_markup=reply_markup,
-                    reply_to_message_id=update.message.reply_to_message.id,
-                    progress=progress_for_pyrogram,
-                    progress_args=(
-                        Translation.UPLOAD_START,
-                        update.message,
-                        start_time,
-                    ),
-                )
-            elif tg_send_type == "vm":
-                await bot.send_video_note(
-                    chat_id=update.message.chat.id,
-                    video_note=download_directory,
-                    duration=duration,
-                    length=width,
-                    thumb=thumb_image_path,
-                    reply_to_message_id=update.message.reply_to_message.id,
-                    progress=progress_for_pyrogram,
-                    progress_args=(
-                        Translation.UPLOAD_START,
-                        update.message,
-                        start_time,
-                    ),
-                )
-            elif tg_send_type == "video":
-                await bot.send_video(
-                    chat_id=update.message.chat.id,
-                    video=download_directory,
-                    caption=description,
-                    parse_mode=enums.ParseMode.HTML,
-                    duration=duration,
-                    width=width,
-                    height=height,
-                    supports_streaming=True,
-                    # reply_markup=reply_markup,
-                    thumb=thumb_image_path,
-                    reply_to_message_id=update.message.reply_to_message.id,
-                    progress=progress_for_pyrogram,
-                    progress_args=(
-                        Translation.UPLOAD_START,
-                        update.message,
-                        start_time,
-                    ),
-                )
-            else:
-                logging.info("Did this happen? :\\")
-            end_two = datetime.now()
-            time_taken_for_upload = (end_two - end_one).seconds
-            #
-            media_album_p = []
-            if images is not None:
-                i = 0
-                caption = "©"
-                for image in images:
-                    if os.path.exists(str(image)):
-                        if i == 0:
-                            media_album_p.append(
-                                InputMediaPhoto(
-                                    media=image,
-                                    caption=caption,
-                                    parse_mode=enums.ParseMode.HTML,
-                                )
-                            )
-                        else:
-                            media_album_p.append(InputMediaPhoto(media=image))
-                        i = i + 1
-            await bot.send_media_group(
+        else:
+            thumb_image_path = None
+        start_time = time.time()
+        # try to upload file
+        if tg_send_type == "audio":
+            await bot.send_audio(
                 chat_id=update.message.chat.id,
-                disable_notification=True,
-                reply_to_message_id=update.message.id,
-                media=media_album_p,
-            )
-            #
-            try:
-                shutil.rmtree(tmp_directory_for_each_user)
-                os.remove(thumb_image_path)
-            except:
-                pass
-            await bot.edit_message_text(
-                text=Translation.AFTER_SUCCESSFUL_UPLOAD_MSG_WITH_TS.format(
-                    time_taken_for_download, time_taken_for_upload
+                audio=download_directory,
+                caption=description,
+                parse_mode=enums.ParseMode.HTML,
+                duration=duration,
+                # performer=response_json["uploader"],
+                # title=response_json["title"],
+                # reply_markup=reply_markup,
+                thumb=thumb_image_path,
+                reply_to_message_id=update.message.reply_to_message.id,
+                progress=progress_for_pyrogram,
+                progress_args=(
+                    Translation.UPLOAD_START,
+                    update.message,
+                    start_time,
                 ),
-                chat_id=update.message.chat.id,
-                message_id=update.message.id,
-                disable_web_page_preview=True,
             )
+        elif tg_send_type == "file":
+            await bot.send_document(
+                chat_id=update.message.chat.id,
+                document=download_directory,
+                thumb=thumb_image_path,
+                caption=description,
+                parse_mode=enums.ParseMode.HTML,
+                # reply_markup=reply_markup,
+                reply_to_message_id=update.message.reply_to_message.id,
+                progress=progress_for_pyrogram,
+                progress_args=(
+                    Translation.UPLOAD_START,
+                    update.message,
+                    start_time,
+                ),
+            )
+        elif tg_send_type == "vm":
+            await bot.send_video_note(
+                chat_id=update.message.chat.id,
+                video_note=download_directory,
+                duration=duration,
+                length=width,
+                thumb=thumb_image_path,
+                reply_to_message_id=update.message.reply_to_message.id,
+                progress=progress_for_pyrogram,
+                progress_args=(
+                    Translation.UPLOAD_START,
+                    update.message,
+                    start_time,
+                ),
+            )
+        elif tg_send_type == "video":
+            await bot.send_video(
+                chat_id=update.message.chat.id,
+                video=download_directory,
+                caption=description,
+                parse_mode=enums.ParseMode.HTML,
+                duration=duration,
+                width=width,
+                height=height,
+                supports_streaming=True,
+                # reply_markup=reply_markup,
+                thumb=thumb_image_path,
+                reply_to_message_id=update.message.reply_to_message.id,
+                progress=progress_for_pyrogram,
+                progress_args=(
+                    Translation.UPLOAD_START,
+                    update.message,
+                    start_time,
+                ),
+            )
+        else:
+            logging.info("Did this happen? :\\")
+        end_two = datetime.now()
+        time_taken_for_upload = (end_two - end_one).seconds
+        #
+        media_album_p = []
+        if images is not None:
+            i = 0
+            caption = "©"
+            for image in images:
+                if os.path.exists(str(image)):
+                    if i == 0:
+                        media_album_p.append(
+                            InputMediaPhoto(
+                                media=image,
+                                caption=caption,
+                                parse_mode=enums.ParseMode.HTML,
+                            )
+                        )
+                    else:
+                        media_album_p.append(InputMediaPhoto(media=image))
+                    i = i + 1
+        await bot.send_media_group(
+            chat_id=update.message.chat.id,
+            disable_notification=True,
+            reply_to_message_id=update.message.id,
+            media=media_album_p,
+        )
+        #
+        try:
+            shutil.rmtree(tmp_directory_for_each_user)
+            os.remove(thumb_image_path)
+        except:
+            pass
+        await bot.edit_message_text(
+            text=Translation.AFTER_SUCCESSFUL_UPLOAD_MSG_WITH_TS.format(
+                time_taken_for_download, time_taken_for_upload
+            ),
+            chat_id=update.message.chat.id,
+            message_id=update.message.id,
+            disable_web_page_preview=True,
+        )
