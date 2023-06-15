@@ -179,12 +179,11 @@ async def youtube_dl_call_back(bot, update):
             file_size = os.stat(og_download_directory).st_size
         except FileNotFoundError as exc:
             for ext in try_ext:
-                try_phrase = f"{ext}.f{youtube_dl_format}.{ext}"
+                try_phrase = f"f{youtube_dl_format}.{ext}"
                 try:
                     download_directory = (
                         f"{os.path.splitext(og_download_directory)[0]}.{ext}"
                     )
-                    print(download_directory)
                     file_size = os.stat(download_directory).st_size
                     break
                 except FileNotFoundError as exc:
@@ -192,7 +191,6 @@ async def youtube_dl_call_back(bot, update):
                         download_directory = (
                             f"{os.path.splitext(og_download_directory)[0]}.{try_phrase}"
                         )
-                        print(download_directory)
                         file_size = os.stat(download_directory).st_size
                         break
 
