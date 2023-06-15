@@ -1,4 +1,5 @@
 import asyncio
+from contextlib import suppress
 import json
 import logging
 import os
@@ -114,7 +115,6 @@ async def youtube_dl_call_back(bot, update):
             download_directory,
         ]
     else:
-        # command_to_exec = ["youtube-dl", "-f", youtube_dl_format, "--hls-prefer-ffmpeg", "--recode-video", "mp4", "-k", youtube_dl_url, "-o", download_directory]
         minus_f_format = youtube_dl_format
         if "youtu" in youtube_dl_url:
             minus_f_format = f"{youtube_dl_format}+bestaudio"
@@ -174,10 +174,12 @@ async def youtube_dl_call_back(bot, update):
             "mp4",
             "webm",
         ]
+
         try:
             file_size = os.stat(download_directory).st_size
         except FileNotFoundError as exc:
             for ext in try_ext:
+                try_phrase = f"{ext}.{youtube_dl_format}.{ext}"
                 try:
                     download_directory = (
                         f"{os.path.splitext(download_directory)[0]}.{ext}"
@@ -185,7 +187,22 @@ async def youtube_dl_call_back(bot, update):
                     file_size = os.stat(download_directory).st_size
                     break
                 except FileNotFoundError as exc:
-                    continue
+                    with suppress(FileNotFoundError):
+                        download_directory = (
+                            f"{os.path.splitext(download_directory)[0]}.{try_phrase}"
+                        )
+                        file_size = os.stat(download_directory).st_size
+                        break
+
+        if file_size > Config.TG_MAX_FILE_SIZE:
+            await bot.edit_message_text(
+                chat_id=update.message.chat.id,
+                message_id=update.message.id,
+                text=Translation.RCHD_TG_API_LIMIT.format(
+                    time_taken_for_download, humanbytes(file_size)
+                ),
+            )
+            return False
 
         is_w_f = False
         images = await generate_screen_shots(
