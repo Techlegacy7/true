@@ -1,5 +1,6 @@
 {
     "name": "Bot",
+    "stack": "container",
     "description": "Bot",
     "keywords": ["telegram"],
     "website": "",
