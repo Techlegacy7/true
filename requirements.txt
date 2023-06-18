@@ -14,3 +14,4 @@ Requests==2.31.0
 yt-dlp==2023.3.4
 TgCrypto==1.2.5
 pyqrcode
+pypng
