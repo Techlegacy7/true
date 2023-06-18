@@ -15,10 +15,11 @@ class UserConfig:
         user = await self.col.find_one({"user_id": user_id})
         return user or False
 
-    async def add_user(self, user_id):
+    async def add_user(self, user_id, is_group=False):
         res = {
             "user_id": user_id,
             "banned": False,
+            "is_group": is_group,
         }
         await self.col.insert_one(res)
         return True

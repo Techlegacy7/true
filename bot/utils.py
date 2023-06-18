@@ -13,6 +13,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.utils import ImageReader
 from reportlab.pdfgen import canvas
 import requests
+import pyqrcode
 
 from bot.config import Config
 from database import db
@@ -39,14 +40,16 @@ async def start_webserver():
     logging.info("Web server started")
 
 
-async def add_new_user(app, user):
+async def add_new_user(app, user, is_group=False):
     user_id = user.id
     if not await db.users.is_user_exist(user_id):
-        await app.send_message(
-            Config.LOG_CHANNEL, f"New user `{user_id}` ({user.mention}) joined the bot"
-        )
-        await db.users.add_user(user_id)
-        logging.info(f"New user {user_id} added to database")
+        if is_group:
+            text = f"New group `{user_id}` ({user.title}) added the bot"
+        else:
+            text = f"New user `{user_id}` ({user.mention}) joined the bot"
+        await app.send_message(Config.LOG_CHANNEL, text)
+        await db.users.add_user(user_id, is_group)
+        logging.info(f"New user/group {user_id} added to database")
         return True
 
 
@@ -89,24 +92,11 @@ async def get_page_source(ph_no):
             return source[source.find(start) + len(start) : source.rfind(end)]
 
 
-async def convert_text_to_pdf_with_image(text_file, output_pdf, photo=None):
+async def convert_text_to_pdf_with_image(text_file, output_pdf):
     # Create a canvas with letter size
     c = canvas.Canvas(output_pdf, pagesize=letter)
 
     page_width, page_height = letter
-    if photo:
-        image = ImageReader(photo)
-        image_width, image_height = image.getSize()
-        max_width = page_width
-        max_height = page_height - 100  # Adjusted to leave space for the text
-        scaling_factor = min(max_width / image_width, max_height / image_height)
-        image_width *= scaling_factor
-        image_height *= scaling_factor
-        image_x = (page_width - image_width) / 2
-        image_y = page_height - 100 - image_height
-
-        # Draw the image at the center of the top of the page
-        c.drawImage(image, image_x, image_y, width=image_width, height=image_height)
 
     # Set the font and size for the content
     c.setFont("Helvetica", 12)
@@ -120,32 +110,75 @@ async def convert_text_to_pdf_with_image(text_file, output_pdf, photo=None):
 
     text_content = text_content.replace("\n", "<br/>")
 
-    text_y = image_y - 20 if photo else page_height - 100
+    text_y = page_height - 100
     x = 20
 
     lines = text_content.split("<br/>")
+    first_content_encountered = False  # Flag to track if content is encountered
+
     for line in lines:
-        if text_y <= 50:
-            # Add a new page if the remaining space is not enough for another line
-            c.showPage()
-            text_y = letter[1] - 50  # Adjust the starting y-position for the new page
+        if "[Image]" in line:
+            # Handle image placeholder in the text
+            image_path_start = line.find("<img>") + 5
+            image_path_end = line.find("</img>")
+            image_path = line[image_path_start:image_path_end]
+            if os.path.exists(image_path):
+                image = ImageReader(image_path)
+                image_width, image_height = image.getSize()
+                max_width = page_width - x * 2
+                max_height = text_y - 50
 
-        words = line.split()
-        line_chunks = []
-        current_chunk = words[0] if words else ""
+                if image_height > max_height:
+                    # Add a new page if the image height is greater than the available space
+                    if first_content_encountered:
+                        c.showPage()
+                        text_y = (
+                            page_height - 100
+                        )  # Adjust the starting y-position for the new page
+                    else:
+                        first_content_encountered = True
 
-        for word in words[1:]:
-            temp_chunk = f"{current_chunk} {word}"
-            if c.stringWidth(temp_chunk) < letter[0] - x * 2:
-                current_chunk = temp_chunk
-            else:
-                line_chunks.append(current_chunk)
-                current_chunk = word
+                # Adjust the image size if it exceeds the available width
+                if image_width > max_width:
+                    scaling_factor = max_width / image_width
+                    image_width *= scaling_factor
+                    image_height *= scaling_factor
 
-        line_chunks.append(current_chunk)
-        for chunk in line_chunks:
-            c.drawString(x, text_y, chunk)
-            text_y -= 20
+                image_x = (page_width - image_width) / 2
+                image_y = text_y - image_height
+
+                if image_y < 50:
+                    # Add a new page if the remaining space is not enough for the image
+                    c.showPage()
+                    text_y = (
+                        page_height - 100
+                    )  # Adjust the starting y-position for the new page
+
+                c.drawImage(
+                    image, image_x, image_y, width=image_width, height=image_height
+                )
+                text_y = image_y - 20
+        else:
+            # Handle regular text
+            if not first_content_encountered:
+                first_content_encountered = True
+
+            words = line.split()
+            line_chunks = []
+            current_chunk = words[0] if words else ""
+
+            for word in words[1:]:
+                temp_chunk = f"{current_chunk} {word}"
+                if c.stringWidth(temp_chunk) < page_width - x * 2:
+                    current_chunk = temp_chunk
+                else:
+                    line_chunks.append(current_chunk)
+                    current_chunk = word
+
+            line_chunks.append(current_chunk)
+            for chunk in line_chunks:
+                c.drawString(x, text_y, chunk)
+                text_y -= 20
 
     # Save the canvas to a PDF file
     c.save()
@@ -258,3 +291,9 @@ def TimeFormatter(milliseconds: int) -> str:
         + (f"{str(milliseconds)}ms, " if milliseconds else "")
     )
     return tmp[:-2]
+
+
+async def generate_qr_code(text, filename="qr_code.png"):
+    qr = pyqrcode.create(text)
+    qr.png(filename, scale=8)
+    return filename

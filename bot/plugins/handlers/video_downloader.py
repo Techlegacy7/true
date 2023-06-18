@@ -25,7 +25,6 @@ Supported Sites
 - Twitter
 - Facebook
 - Instagram
-- Spotify
 - Vimeo
 - Dailymotion
 - TikTok
@@ -45,6 +44,10 @@ Supported Sites
 async def echo(bot, update):
     logging.info(update.from_user)
     url = update.text
+
+    if "instagram.com" in url:
+        url = url.replace("reel", "p")
+
     youtube_dl_username = None
     youtube_dl_password = None
     file_name = None

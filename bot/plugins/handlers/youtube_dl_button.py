@@ -205,15 +205,7 @@ async def youtube_dl_call_back(bot, update):
             return False
 
         is_w_f = False
-        images = await generate_screen_shots(
-            download_directory,
-            tmp_directory_for_each_user,
-            is_w_f,
-            Config.DEF_WATER_MARK_FILE,
-            300,
-            9,
-        )
-        logging.info(images)
+
         await bot.edit_message_text(
             text=Translation.UPLOAD_START,
             chat_id=update.message.chat.id,
@@ -331,36 +323,10 @@ async def youtube_dl_call_back(bot, update):
             logging.info("Did this happen? :\\")
         end_two = datetime.now()
         time_taken_for_upload = (end_two - end_one).seconds
-        #
-        media_album_p = []
-        if images is not None:
-            i = 0
-            caption = "©"
-            for image in images:
-                if os.path.exists(str(image)):
-                    if i == 0:
-                        media_album_p.append(
-                            InputMediaPhoto(
-                                media=image,
-                                caption=caption,
-                                parse_mode=enums.ParseMode.HTML,
-                            )
-                        )
-                    else:
-                        media_album_p.append(InputMediaPhoto(media=image))
-                    i = i + 1
-        await bot.send_media_group(
-            chat_id=update.message.chat.id,
-            disable_notification=True,
-            reply_to_message_id=update.message.id,
-            media=media_album_p,
-        )
-        #
-        try:
+
+        with suppress(Exception):
             shutil.rmtree(tmp_directory_for_each_user)
             os.remove(thumb_image_path)
-        except:
-            pass
         await bot.edit_message_text(
             text=Translation.AFTER_SUCCESSFUL_UPLOAD_MSG_WITH_TS.format(
                 time_taken_for_download, time_taken_for_upload

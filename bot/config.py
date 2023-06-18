@@ -66,18 +66,25 @@ class Buttons(object):
     strong_password_generator_text = "Strong Password Generator"
     video_downloader_text = "Video Downloader"
     temp_mail_text = "Temp Mail"
+    qr_code_text = "QR Code"
     text_to_speech_text = "Text To Speech"
     pdf_converter_text = "PDF Converter"
     main_menu_regex = "Main Menu"
     help_regex = "Help"
     about_regex = "About"
+    feedback_regex = "Feedback"
+    movies_regex = "Movies"
+    contact_regex = "Contact"
+    more_bot_regex = "More Bots"
 
     start_button_data = [
         [user_info_text, trucaller_info_text],
         [strong_password_generator_text, video_downloader_text],
-        [temp_mail_text],
+        [temp_mail_text, qr_code_text],
         [text_to_speech_text, pdf_converter_text],
         [help_regex, about_regex],
+        [movies_regex, contact_regex],
+        [feedback_regex, more_bot_regex],
     ]
 
     START_BUTTONS = [
