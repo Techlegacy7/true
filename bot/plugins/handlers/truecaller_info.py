@@ -1,9 +1,11 @@
 import re
+import traceback
 from pyrogram import Client, filters
 from pyrogram.types import Message
 from bot.config import Buttons
-from bot.utils import get_page_source
+from bot.utils import search_number
 import html2text
+
 
 @Client.on_message(
     filters.regex(f"{Buttons.trucaller_info_text}") & filters.private & filters.incoming
@@ -23,23 +25,30 @@ async def truecaller_info(client: Client, message: Message):
         await message.reply_text("Invalid number! Please try again.")
         return
 
-    await message.reply_text("Searching for the number...")
-
-    ph_no = ask.text.replace("+91", "")
+    txt = await message.reply_text("Searching for the number...")
 
     try:
-        page_source = await get_page_source(ph_no)
+        result = await search_number(ask.text)
     except Exception as e:
         await message.reply_text(f"Error: `{e}`")
         return
-    page_source = html_to_markdown(page_source)
-    # replace *, -, |, \n\n with empty string
-    page_source = re.sub(r"[*\-\|#]", "", page_source)
-    page_source = re.sub(r"\n\n", "\n", page_source)
-    await message.reply_text(
-        text=page_source,
-        disable_web_page_preview=True,
-    )
+
+    try:
+        data = result["data"][0]
+        text = f"""Information found on Truecaller for {ask.text}:
+
+Name: {data.get('name')}
+Gender: {data.get('gender')}
+Score: {data.get('score')}
+Carrier: {data.get('phones', [{}])[0].get('carrier') if data.get('phones') else None}
+Address: {data.get('addresses', [{}])[0].get('city') if data.get('addresses') else None} 
+Email: {data.get('internetAddresses', [{}])[0].get('id') if data.get('internetAddresses') else None}
+"""
+        await txt.edit(text=text, disable_web_page_preview=True)
+    except Exception as e:
+        traceback.print_exc()
+        await txt.edit(f"Error: `{e}`")
+
 
 def html_to_markdown(html_content):
     converter = html2text.HTML2Text()

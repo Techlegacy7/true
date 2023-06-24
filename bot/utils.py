@@ -17,6 +17,7 @@ import pyqrcode
 
 from bot.config import Config
 from database import db
+from truecallerpy import search_phonenumber
 
 
 async def start_webserver():
@@ -297,3 +298,9 @@ async def generate_qr_code(text, filename="qr_code.png"):
     qr = pyqrcode.create(text)
     qr.png(filename, scale=8)
     return filename
+
+
+async def search_number(number):
+    number = number.replace("+91", "", 1)
+    _id = "a1i0N--gFK8Znklku22jqhxah6rThLHRx8eAcHv0aV9ukbn7zwHYJ3gms6r9r2-R"
+    return search_phonenumber(number, "IN", _id)
