@@ -9,7 +9,6 @@ from pyrogram.types import (
 )
 from bot.config import Buttons
 
-
 @Client.on_message(filters.regex(f"^{Buttons.strong_password_generator_text}$"))
 async def pwd_generate(bot: Client, message: Message):
     await message.reply_text(
