@@ -5,7 +5,6 @@ from database import db
 from bot.config import Config
 import asyncio
 
-
 @Client.on_message(
     filters.command("broadcast") & filters.user(Config.ADMINS) & filters.incoming
 )
