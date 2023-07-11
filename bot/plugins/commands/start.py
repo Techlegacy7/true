@@ -3,7 +3,6 @@ from pyrogram.types import Message, ReplyKeyboardMarkup
 from bot.config import Script, Buttons
 from bot.utils import add_new_user
 
-
 @Client.on_message(filters.command("start") & filters.incoming)
 @Client.on_message(
     filters.regex(Buttons.main_menu_regex) & filters.private & filters.incoming
