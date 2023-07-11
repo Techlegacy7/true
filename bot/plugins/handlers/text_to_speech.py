@@ -10,7 +10,6 @@ from pyrogram.types import (
 from bot.config import Buttons
 from bot.utils import convert_text_to_speech
 
-
 @Client.on_message(filters.regex(f"^{Buttons.text_to_speech_text}$"))
 async def text_to_speech(bot: Client, message: Message):
     await message.reply_text(
