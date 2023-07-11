@@ -10,7 +10,6 @@ from datetime import datetime
 from hachoir.metadata import extractMetadata
 from hachoir.parser import createParser
 
-
 from PIL import Image
 from pyrogram import enums
 from pyrogram.types import InputMediaPhoto
