@@ -3,7 +3,6 @@ import pyrogram
 from bot.utils import generate_qr_code
 from bot.config import Buttons
 
-
 @pyrogram.Client.on_message(
     pyrogram.filters.regex(pattern=f"^{Buttons.qr_code_text}$")
     & pyrogram.filters.private
