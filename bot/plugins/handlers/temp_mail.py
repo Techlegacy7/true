@@ -8,7 +8,6 @@ from pyrogram.types import (
 from bot.config import Buttons
 from bot.utils import get_mail, generate_mail, get_mailbox
 
-
 @Client.on_message(
     filters.regex(f"^{Buttons.temp_mail_text}$") & filters.private & filters.incoming
 )
