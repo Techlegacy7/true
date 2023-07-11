@@ -2,7 +2,6 @@ from pyrogram import Client, filters, types
 from database import db
 from bot.config import Config
 
-
 @Client.on_message(
     filters.command("users") & filters.user(Config.ADMINS) & filters.incoming
 )
