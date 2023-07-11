@@ -4,7 +4,6 @@ import time
 from hachoir.metadata import extractMetadata
 from hachoir.parser import createParser
 
-
 async def place_water_mark(input_file, output_file, water_mark_file):
     watermarked_file = f"{output_file}.watermark.png"
     metadata = extractMetadata(createParser(input_file))
