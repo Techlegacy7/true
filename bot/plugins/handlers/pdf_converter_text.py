@@ -5,7 +5,6 @@ from pyrogram.types import Message
 from bot.config import Buttons
 from bot.utils import convert_text_to_pdf_with_image
 
-
 @Client.on_message(
     filters.regex(f"^{Buttons.pdf_converter_text}$")
     & filters.private
