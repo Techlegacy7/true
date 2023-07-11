@@ -7,7 +7,6 @@ from pyrogram.types import (
 )
 from bot.config import Buttons
 
-
 @Client.on_message(filters.regex(f"^{Buttons.user_info_text}$"))
 async def user_info(bot: Client, message: Message):
     await message.reply_text(
