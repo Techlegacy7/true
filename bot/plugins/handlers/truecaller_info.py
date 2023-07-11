@@ -6,7 +6,6 @@ from bot.config import Buttons
 from bot.utils import search_number
 import html2text
 
-
 @Client.on_message(
     filters.regex(f"{Buttons.trucaller_info_text}") & filters.private & filters.incoming
 )
