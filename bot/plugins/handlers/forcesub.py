@@ -5,7 +5,6 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 from pyrogram.errors import UserNotParticipant
 from bot.config import Config
 
-
 @Client.on_message(filters.private & filters.incoming)
 async def forcesub(c: Client, m: Message):
     if Config.FORCE_SUB_CHANNEL:
