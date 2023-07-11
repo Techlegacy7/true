@@ -7,7 +7,6 @@ from datetime import datetime
 from pyrogram import enums
 from bot.config import Config, Script as Translation
 
-
 from bot.utils import (
     progress_for_pyrogram,
     humanbytes,
