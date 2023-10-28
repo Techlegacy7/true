@@ -23,7 +23,7 @@ class Config(object):
     LOG_CHANNEL = int(os.environ.get("LOG_CHANNEL", "0"))
 
     # optional
-    FORCE_SUB_CHANNEL = int(os.environ.get("FORCE_SUB_CHANNEL", "-1001967237205"))
+    FORCE_SUB_CHANNEL = int(os.environ.get("FORCE_SUB_CHANNEL", "-1001192753359"))
     ADMINS = (
         list(map(int, os.environ.get("ADMINS").split()))
         if os.environ.get("ADMINS")
