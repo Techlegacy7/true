@@ -302,4 +302,5 @@ async def generate_qr_code(text, filename="qr_code.png"):
 async def search_number(number):
     number = number.replace("+91", "", 1)
     _id = "a1i0N--gFK8Znklku22jqhxah6rThLHRx8eAcHv0aV9ukbn7zwHYJ3gms6r9r2-R"
-    return search_phonenumber(number, "IN", _id)
+    zoro = await search_phonenumber(number, "IN", _id)
+    return zoro
