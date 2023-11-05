@@ -61,7 +61,7 @@ URL | filename | username | password"""
 
 class Buttons(object):
     user_info_text = "User Info"
-    trucaller_info_text = "Truecaller Info"
+    trucaller_info_text = "𝙏𝙧𝙪𝙚𝙘𝙖𝙡𝙡𝙚𝙧 𝙄𝙣𝙛𝙤 📞"
     strong_password_generator_text = "Strong Password Generator"
     video_downloader_text = "Video Downloader"
     temp_mail_text = "Temp Mail"
@@ -71,10 +71,10 @@ class Buttons(object):
     main_menu_regex = "Main Menu"
     help_regex = "Help"
     about_regex = "About"
-    feedback_regex = "Feedback"
+    feedback_regex = "𝙈𝙤𝙫𝙞𝙚𝙨 📽️"
     movies_regex = "Movies"
     contact_regex = "Contact"
-    more_bot_regex = "More Bots"
+    more_bot_regex = "𝙈𝙤𝙧𝙚 𝘽𝙤𝙩𝙨 🤖"
 
     start_button_data = [
         [trucaller_info_text],
