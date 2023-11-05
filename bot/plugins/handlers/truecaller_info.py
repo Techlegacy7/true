@@ -12,7 +12,7 @@ import json
 async def truecaller_info(client: Client, message: Message):
     ask = await message.chat.ask(
         text="Send me the number you want to search for.\n\n"
-        "Example (Format): +919876543210\n"
+        "Example (Format): `+919876543210`\n"
         "Only Indian numbers are supported.\n\n",
         filters=filters.text,
         timeout=3600,
