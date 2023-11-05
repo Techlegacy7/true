@@ -8,4 +8,4 @@ from bot.config import Buttons
     & pyrogram.filters.incoming
 )
 async def feedback_handler(bot, update):
-    await update.reply_text("Checkout @IMoviesRobot (Join @IMoviesRobot_Channel for updates )to watch latest Movies,Webseries,Anime for free without any ads")
+    await update.reply_text("Checkout @IMoviesRobot (Join @IMoviesRobot_Channel for updates) to watch latest Movies,Webseries,Anime for free without any ads.")
