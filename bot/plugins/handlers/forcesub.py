@@ -13,7 +13,7 @@ async def forcesub(c: Client, m: Message):
         try:
             user = await c.get_chat_member(Config.FORCE_SUB_CHANNEL, m.from_user.id)
             if user.status == "kicked":
-                await m.reply_text("**Hey you are banned 😜**", quote=True)
+                await m.reply_text("**Hey Looks like you have been banned.Try using this bot from any other account**", quote=True)
                 return
         except UserNotParticipant:
             buttons = [
@@ -26,7 +26,7 @@ async def forcesub(c: Client, m: Message):
             buttons.append([InlineKeyboardButton("🔄 Refresh", callback_data="refresh")])
 
             await m.reply_text(
-                f"Hey {m.from_user.mention(style='md')} you need join My updates channel in order to use me 😉\n\n"
+                f"Hey {m.from_user.mention(style='md')} you need to join My updates channel in order to use me\n\n"
                 "__Press the Following Button to join Now 👇__",
                 reply_markup=InlineKeyboardMarkup(buttons),
                 quote=True,
@@ -54,7 +54,7 @@ async def refresh_cb(c, m):
                 return
         except UserNotParticipant:
             await m.answer(
-                "You are not yet joined our channel. First join and then press refresh button 🤤",
+                "You have not joined our channel yet. First, join and then press the refresh button 🤤",
                 show_alert=True,
             )
             return
