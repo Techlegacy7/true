@@ -8,4 +8,4 @@ from bot.config import Buttons
     & pyrogram.filters.incoming
 )
 async def more_bots_handler(bot, update):
-    await update.reply_text("More Bots")
+    await update.reply_text("Checkout @BestBotsTG for more such amazing botsCheckout @BestBotsTG for more such amazing bots")
