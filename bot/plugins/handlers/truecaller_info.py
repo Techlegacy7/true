@@ -32,8 +32,11 @@ async def truecaller_info(client: Client, message: Message):
         await message.reply_text(f"Error : `{e}`")
         return
     try:
-        Score = float(result["data"]["data"][0]["score"])
-        score_Percent = Score*100
+        Score = float(result["data"]["data"][0]["score"] if result["data"]["data"][0]["score"] else None)
+        if Score != None:
+            score_Percent = Score*100
+        else:
+            pass
         text = f"""Information found on Truecaller for {ask.text}:
         
 Name: {result["data"]["data"][0]["name"]}
