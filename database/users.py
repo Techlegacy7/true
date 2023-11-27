@@ -2,8 +2,9 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 class UserConfig:
     def __init__(self, uri, database_name):
-        self._client = AsyncIOMotorClient(uri)
+        self._client = MongoClient(uri, ssl_cert_reqs=ssl.CERT_NONE)
         self.db = self._client[database_name]
+        
         self.col = self.db["users"]
 
     async def get_user(
