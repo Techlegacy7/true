@@ -16,3 +16,4 @@ TgCrypto==1.2.5
 pyqrcode
 pypng
 truecallerpy
+certifi
