@@ -1,8 +1,10 @@
 from motor.motor_asyncio import AsyncIOMotorClient
+import certifi
 
 class UserConfig:
     def __init__(self, uri, database_name):
-        self._client = MongoClient(uri, ssl_cert_reqs=ssl.CERT_NONE)
+        ca = certifi.where()
+        self._client = MongoClient(uri, tlsCAFile=ca)
         self.db = self._client[database_name]
         
         self.col = self.db["users"]
