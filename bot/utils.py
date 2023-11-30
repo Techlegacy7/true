@@ -42,7 +42,7 @@ async def start_webserver():
 
 async def add_new_user(app, user, is_group=False):
     user_id = user.id
-    if not await db.users.is_user_exist(user_id):
+    if not db.users.is_user_exist(user_id):
         if is_group:
             text = f"New group `{user_id}` ({user.title}) added the bot"
         else:
