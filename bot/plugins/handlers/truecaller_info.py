@@ -33,18 +33,14 @@ async def truecaller_info(client: Client, message: Message):
         await message.reply_text("Invalid number or data Unavailable! Please try again and see the example.")
         return
     try:
-        Score = float(result["data"]["data"][0]["score"] if result["data"]["data"][0]["score"] else None)
-        if Score != None:
-            score_Percent = Score*100
-        else:
-            pass
+        data = result["data"][0]
         text = f"""Information found on Truecaller for {ask.text} 🎉:
-        
-Name: {result["data"]["data"][0]["name"]}
-Score: {score_Percent}%
-Carrier: {result["data"]["data"][0]["phones"][0]["carrier"] if result["data"]["data"][0]["phones"] else None}
-Address: {result["data"]["data"][0]["addresses"][0]["city"] if result["data"]["data"][0]["addresses"] else None} 
-Email: {result["data"]["data"][0]["internetAddresses"][0]["id"] if result["data"]["data"][0]["internetAddresses"] else None}
+
+Name: {data.get('name')}
+Score: {data.get('score')}
+Carrier: {data.get('phones', [{}])[0].get('carrier') if data.get('phones') else None}
+Address: {data.get('addresses', [{}])[0].get('city') if data.get('addresses') else None} 
+Email: {data.get('internetAddresses', [{}])[0].get('id') if data.get('internetAddresses') else None}
 """
         await txt.edit(text=text, disable_web_page_preview=True)
     except Exception as e:
